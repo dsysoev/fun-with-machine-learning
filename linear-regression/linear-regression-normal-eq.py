@@ -31,7 +31,7 @@ def get_score(dataX, dataY):
             xs, ys = test_X_with_bias, testY.reshape(-1, 1)
             return {X: xs, y: ys, theta: theta_value}
 
-    # split data on te=rain and test part
+    # split data on train and test part
     trainX, testX, trainY, testY = train_test_split(dataX, dataY,
                                                     test_size=FLAGS.test_size)
 

@@ -9,7 +9,6 @@ import tempfile
 import argparse
 
 import numpy as np
-import tensorflow as tf
 
 from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
@@ -36,41 +35,39 @@ def plot_data():
     # plot results
     ax = results.plot(alpha=1)
 
-    ax.set_title("""California housing
-        Linear Regression with L2 regularization lambda = {}""".format(
-        lambda_value))
+    ax.set_title("""California housing with Linear Regression
+    L2 regularization lambda = {}""".format(lambda_value))
     ax.set_xlabel('number of objects')
     ax.set_ylabel('MSLE')
     ax.set_xscale('log')
     ax.legend()
     plt.show()
 
-def main(_):
+def main():
 
     # create results file if it does not exist
     if FLAGS.force or not os.path.isfile(FLAGS.results_file):
-        tf.gfile.MakeDirs(os.path.dirname(FLAGS.results_file))
+        os.makedirs(os.path.dirname(FLAGS.results_file), exist_ok=True)
 
         # get data
         housing = fetch_california_housing()
 
         # create list of number of object
-        num_objects_list = [50, 100, 500, 1000, 5000, 10000, 20000]
+        num_objects_list = [50, 100, 500, 1000, 5000, 10000]
         lambda_value = FLAGS.lambda_value
-
-        # add shuffle for data
-        index_list = np.arange(housing.data.shape[0])
-        np.random.seed(100)
-        np.random.shuffle(index_list)
 
         # collect data with different count of objects
         train_score_list, test_score_list, lambda_list = [], [], []
         for i in num_objects_list:
+            # split data
+            trainx, testx, trainy, testy = train_test_split(
+                housing.data, housing.target, test_size=i, train_size=i,
+                random_state=100)
+
+            # get score
             train_score, test_score = linear_regression_normal_equation(
-                housing.data[index_list[:i]],
-                housing.target[index_list[:i]],
-                lambda_value,
-                FLAGS.test_size)
+                trainx, testx, trainy, testy, lambda_value)
+
             train_score_list.append(train_score[0])
             test_score_list.append(test_score[0])
             lambda_list.append(lambda_value)
@@ -79,7 +76,7 @@ def main(_):
         data = pd.DataFrame({'lambda': lambda_list,
                              'train_score': train_score_list,
                              'test_score': test_score_list},
-                             index=num_objects_list)
+                            index=num_objects_list)
         # set num_objects as index
         data.index.name = 'num_objects'
         # save data to csv file
@@ -106,4 +103,4 @@ if __name__ == '__main__':
 
 
     FLAGS, unparsed = parser.parse_known_args()
-    tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+    main()

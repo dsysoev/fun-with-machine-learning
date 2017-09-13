@@ -9,9 +9,9 @@ import tempfile
 import argparse
 
 import numpy as np
-import tensorflow as tf
 
 from sklearn.datasets import fetch_california_housing
+from sklearn.model_selection import train_test_split
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -23,11 +23,9 @@ matplotlib.style.use('seaborn')
 
 def plot_data():
     """ plot chart from prepared data """
-
     # check results file
     if not os.path.isfile(FLAGS.results_file):
         raise IOError("No such file '{}'".format(FLAGS.results_file))
-
     # read DataFrame from results file
     results = pd.read_csv(FLAGS.results_file, index_col='lambda')
     # plot results
@@ -38,11 +36,11 @@ def plot_data():
     ax.set_ylabel('MSLE')
     plt.show()
 
-def main(_):
+def main():
 
     # create results file if it does not exist
     if FLAGS.force or not os.path.isfile(FLAGS.results_file):
-        tf.gfile.MakeDirs(os.path.dirname(FLAGS.results_file))
+        os.makedirs(os.path.dirname(FLAGS.results_file), exist_ok=True)
 
         # create list of lambda of interest
         lambda_list = np.linspace(FLAGS.min_lambda,
@@ -51,21 +49,22 @@ def main(_):
 
         housing = fetch_california_housing()
 
+        trainx, testx, trainy, testy = train_test_split(
+            housing.data, housing.target, test_size=FLAGS.test_size)
+
         # collect data with different lambda value
         train_score_list, test_score_list = [], []
         for lambda_value in lambda_list:
+            # get scores
             train_score, test_score = linear_regression_normal_equation(
-                housing.data,
-                housing.target,
-                lambda_value,
-                FLAGS.test_size)
+                trainx, testx, trainy, testy, lambda_value)
             train_score_list.append(train_score[0])
             test_score_list.append(test_score[0])
 
         # create DataFrame object
         data = pd.DataFrame({'train_score': train_score_list,
                              'test_score': test_score_list},
-                             index=lambda_list)
+                            index=lambda_list)
         # set num_objects as index
         data.index.name = 'lambda'
         # save data to csv file
@@ -92,4 +91,4 @@ if __name__ == '__main__':
         help='File with results')
 
     FLAGS, unparsed = parser.parse_known_args()
-    tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+    main()

@@ -1,2 +1,3 @@
 # fun-with-machine-learning
-Simple machine learning models implemented in tensorflow just for fun)
+
+Classic machine learning algorithms implemented in python, just for fun)

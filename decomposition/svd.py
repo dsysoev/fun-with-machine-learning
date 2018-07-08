@@ -8,16 +8,14 @@ import numpy as np
 
 
 def L2_norm(vec):
-    """
-    calculate L2 norm of vertor
+    """Calculate L2 norm of vertor
 
     returns: float
     """
     return np.sum(np.abs(vec) ** 2) ** 0.5
 
 def random_unit_vector(size):
-    """
-    create normalized random unit vector
+    """Create normalized random unit vector
 
     size: lenght of vector
 
@@ -31,8 +29,14 @@ def random_unit_vector(size):
     return unnormalized / norm
 
 def svd_1d(A, epsilon=1e-10):
-    """
-    The one-dimensional SVD
+    """The one-dimensional SVD
+
+    A: matrix
+    epsilon: tolerance
+
+    Returns:
+
+    VT - right singular vector
     """
     n, m = A.shape
     # create random normalized unit vector
@@ -48,12 +52,17 @@ def svd_1d(A, epsilon=1e-10):
         if abs(np.dot(currentV, lastV)) > 1 - epsilon:
             return currentV
 
-def svd(A, epsilon=1e-10):
-    """
-    Compute the singular-value decomposition of a matrix.
+def svd(A, epsilon=1e-10, random_state=None):
+    """Compute the singular-value decomposition of a matrix.
 
-    Returns: U, singularValues, V
+    A: matrix
+    epsilon: tolerance
+    random_state: int
+
+    Returns: U, S, VT
     """
+
+    np.random.seed(random_state)
     # shape of matrix
     # m - number of columns in matrix
     n, m = A.shape
@@ -65,13 +74,11 @@ def svd(A, epsilon=1e-10):
         # and substact singular values from it
         # for all previuos columns
         matrixFor1D = A.copy()
-
         for singular, u, v in svdSoFar[:i]:
             # calculate product of two vectors
             matrix = np.outer(u, v)
             # substact previous singular values
             matrixFor1D -= singular * matrix
-
         # calculate svd for remaining matrix
         v = svd_1d(matrixFor1D, epsilon=epsilon)
         # next singular vector unnormalized
@@ -82,14 +89,15 @@ def svd(A, epsilon=1e-10):
         u = u_unnormalized / sigma
         # append
         svdSoFar.append((sigma, u, v))
-
     # transform it into matrices of the right shape
     singularValues, us, vs = [np.array(x) for x in zip(*svdSoFar)]
 
     return us.T, singularValues, vs
 
+
 if __name__ == "__main__":
-    ratings = np.array([
+
+    data = np.array([
         [2, 5, 3],
         [1, 2, 1],
         [4, 1, 1],
@@ -99,11 +107,25 @@ if __name__ == "__main__":
         [2, 4, 2],
         [2, 2, 5],
     ], dtype='float64')
+
+    # calculate mean vector
+    data_mean = data.mean(axis=0)
+    # extract mean vector from original matrix
+    data_centered = data - data_mean
     # performe SVD
-    U, singvalues, V = svd(ratings, epsilon=1e-10)
+    # X' = U * S * VT
+    # X - n-by-m matrix
+    #
+    # U - n-by-n matrix left singular vectors
+    # S - singular values
+    # VT - m-by-m matrix right singular vectors
+    U, S, VT = svd(data_centered, epsilon=1e-10, random_state=37)
     # calculate restored matrix based on SVD
-    restored = np.dot(U, np.dot(np.diag(singvalues), V))
+    restored = np.dot(U, np.dot(np.diag(S), VT)) + data_mean
     # calculate delta between original matrix and restored
-    delta = np.round(ratings - restored)
-    # print(U, singvalues, V)
-    print(delta)
+    is_equal = (np.round(data - restored) == 0).all()
+    print('data:\n{}'.format(data))
+    print('U:\n{}'.format(U))
+    print('S:\n{}'.format(np.diag(S)))
+    print('VT:\n{}'.format(VT))
+    print('\nOriginal matrix and restores are equal: {}'.format(is_equal))

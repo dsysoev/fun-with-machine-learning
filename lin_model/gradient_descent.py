@@ -56,12 +56,12 @@ def gradient_descent(X, y, theta=None, alpha=0.05, num_epoch=10, verbose=True):
                 "epoch: {:4d} cost: {:.4f}".format(epoch, cost[epoch]))
     return theta
 
-def inverse_transform(theta_normilize, X, X_std):
+def inverse_transform(theta_normalize, X, X_std):
     """transform theta normilize to original feature space
     """
     n = X_std.shape[0]
     # rescale theta
-    theta_rescaled = (theta_normilize.flatten()[1:] / X_std).reshape((n, 1))
+    theta_rescaled = (theta_normalize.flatten()[1:] / X_std).reshape((n, 1))
     # get predictions
     y_pred = X @ theta_rescaled
     # calculate mean bias values

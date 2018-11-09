@@ -5,6 +5,12 @@ A NeuralNetwork is just a collection of layers.
 import numpy as np
 
 
+def softmax(x):
+    """Compute the softmax of vector x."""
+    z = x - np.max(x, axis=1).reshape(-1, 1)
+    return np.exp(z) / np.sum(np.exp(z), axis=1).reshape(-1, 1)
+
+
 class NeuralNetwork:
     """
     A basic NeuralNetwork class
@@ -28,11 +34,15 @@ class NeuralNetwork:
             grad = layer.backward(grad)
         return grad
 
+    def predict_proba(self, inputs):
+        value = softmax(self.forward(inputs))
+        return value
+
     def predict(self, inputs):
         """
         select class with max value
         """
-        value = self.forward(inputs)
+        value = self.predict_proba(inputs)
         predicted = np.argmax(value, axis=1)
         return predicted
 

@@ -117,12 +117,41 @@ def relu(x):
 
 
 def relu_prime(x):
-    return relu(x) > 0
+    return x > 0
 
 
 class Relu(Activation):
     """
-    sigmoid function
+    Relu function
     """
     def __init__(self):
         super().__init__(relu, relu_prime)
+
+def leakerelu(x, alpha):
+    is_positive = x > 0
+    return is_positive * x + (1 - is_positive) * alpha * x
+
+
+def leakerelu_prime(x, alpha):
+    is_positive = x > 0
+    return is_positive + (1 - is_positive) * alpha
+
+
+class LeakyRelu(Activation):
+    """
+    Leaky Relu function
+    """
+    def __init__(self, alpha):
+        self.alpha = alpha
+        super().__init__(leakerelu, leakerelu_prime)
+
+    def forward(self, inputs):
+        self.inputs = inputs
+        return self.f(inputs, self.alpha)
+
+    def backward(self, grad):
+        """
+        if y = f(x) and x = g(z)
+        then dy/dz = f'(x) * g'(z)
+        """
+        return self.f_prime(self.inputs, self.alpha) * grad

@@ -7,7 +7,7 @@ import numpy as np
 
 from train import train
 from network import NeuralNetwork
-from layers import Linear, Sigmoid
+from layers import Linear, Sigmoid, Relu, Tanh, LeakyRelu
 from optimizer import SGD
 from data import BatchIterator, load_mnist, encode_labels
 
@@ -26,7 +26,7 @@ train_targets_enc = encode_labels(train_targets, 10)
 # simple and fast
 network = NeuralNetwork([
     Linear(input_size=784, output_size=32),
-    Sigmoid(),
+    Relu(),
     Linear(input_size=32, output_size=10),
 ])
 # train our network

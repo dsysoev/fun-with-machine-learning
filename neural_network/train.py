@@ -18,8 +18,8 @@ def train(network,
         # initial error loss for current epoch
         epoch_loss = 0.0
         for batch in iterator(inputs, targets):
-            # perform forward step and get predicted values
-            predicted = network.forward(batch.inputs)
+            # perform forward step and get predicted probability
+            predicted = network.predict_proba(batch.inputs)
             # calculate loss over all elements in batch
             epoch_loss += loss.loss(predicted, batch.targets)
             # calculate gradients based predicted values

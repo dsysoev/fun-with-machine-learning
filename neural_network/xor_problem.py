@@ -8,7 +8,7 @@ import numpy as np
 
 from train import train
 from network import NeuralNetwork
-from layers import Linear, Sigmoid
+from layers import Linear, Relu
 from optimizer import SGD
 
 
@@ -30,14 +30,14 @@ np.random.seed(37)
 # create a network architecture
 network = NeuralNetwork([
     Linear(input_size=2, output_size=4),
-    Sigmoid(),
+    Relu(),
     Linear(input_size=4, output_size=2)
 ])
 # train our network
 train(network,
       inputs,
       targets,
-      num_epochs=3000,
+      num_epochs=300,
       optimizer=SGD(learning_rate=0.01),
       verbose=True)
 # get prediction

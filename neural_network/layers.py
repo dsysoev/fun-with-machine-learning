@@ -111,3 +111,18 @@ class Sigmoid(Activation):
     """
     def __init__(self):
         super().__init__(sigmoid, sigmoid_prime)
+
+def relu(x):
+    return x * (x > 0)
+
+
+def relu_prime(x):
+    return relu(x) > 0
+
+
+class Relu(Activation):
+    """
+    sigmoid function
+    """
+    def __init__(self):
+        super().__init__(relu, relu_prime)

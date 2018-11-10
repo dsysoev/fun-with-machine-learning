@@ -2,6 +2,10 @@
 
 Classic machine learning algorithms implemented in python, just for fun)
 
+## Pytorch
+
+Compare performance Pytorch vs Numpy
+
 ## Neural Network
 
 Neural Network ready to solve different problem.

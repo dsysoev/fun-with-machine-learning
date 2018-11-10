@@ -30,9 +30,12 @@ class NeuralNetwork:
         """
         perform backward pass
         """
-        for layer in reversed(self.layers):
+        grads = {}
+        for num, layer in enumerate(reversed(self.layers)):
             grad = layer.backward(grad)
-        return grad
+            # save gradients
+            grads[-num] = grad
+        return grads
 
     def predict_proba(self, inputs):
         value = softmax(self.forward(inputs))

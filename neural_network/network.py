@@ -15,15 +15,16 @@ class NeuralNetwork:
     """
     A basic NeuralNetwork class
     """
-    def __init__(self, layers):
+    def __init__(self, layers, training=False):
         self.layers = layers
+        self.training = training
 
     def forward(self, inputs):
         """
         perform forward pass
         """
         for layer in self.layers:
-            inputs = layer.forward(inputs)
+            inputs = layer.forward(inputs, self.training)
         return inputs
 
     def backward(self, grad):

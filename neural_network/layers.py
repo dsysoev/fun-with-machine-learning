@@ -11,7 +11,7 @@ class Layer:
         self.params = {}
         self.grads = {}
 
-    def forward(self, inputs):
+    def forward(self, inputs, training=None):
         """
         Produce the outputs corresponding to these inputs
         """
@@ -33,7 +33,7 @@ class Linear(Layer):
         self.params["w"] = np.random.randn(input_size, output_size)
         self.params["b"] = np.random.randn(output_size)
 
-    def forward(self, inputs):
+    def forward(self, inputs, training=None):
         """
         outputs = inputs @ w + b
         """
@@ -67,7 +67,7 @@ class Activation(Layer):
         self.f = f
         self.f_prime = f_prime
 
-    def forward(self, inputs):
+    def forward(self, inputs, training=None):
         self.inputs = inputs
         return self.f(inputs)
 
@@ -145,7 +145,7 @@ class LeakyRelu(Activation):
         self.alpha = alpha
         super().__init__(leakerelu, leakerelu_prime)
 
-    def forward(self, inputs):
+    def forward(self, inputs, training=None):
         self.inputs = inputs
         return self.f(inputs, self.alpha)
 
@@ -155,3 +155,30 @@ class LeakyRelu(Activation):
         then dy/dz = f'(x) * g'(z)
         """
         return self.f_prime(self.inputs, self.alpha) * grad
+
+
+def dropout(x, drop):
+    return x * drop
+
+def dropout_prime(x, drop):
+    return drop
+
+
+class Dropout(Activation):
+    """
+    Dropout layer
+    """
+    def __init__(self, prob):
+        self.prob = prob
+        super().__init__(dropout, dropout_prime)
+
+    def forward(self, inputs, training=None):
+        self.inputs = inputs
+        if training:
+            self.drop = np.random.binomial(1, 1 - self.prob, size=inputs.shape)
+            return self.f(inputs, self.drop)
+        else:
+            return inputs
+
+    def backward(self, grad):
+        return self.f_prime(self.inputs, self.drop) * grad

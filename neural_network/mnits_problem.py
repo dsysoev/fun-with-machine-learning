@@ -7,7 +7,7 @@ import numpy as np
 
 from train import train
 from network import NeuralNetwork
-from layers import Linear, Sigmoid, Relu, Tanh, LeakyRelu
+from layers import Linear, Sigmoid, Relu, Tanh, LeakyRelu, Dropout
 from optimizer import SGD
 from data import BatchIterator, load_mnist, encode_labels
 
@@ -25,10 +25,11 @@ train_targets_enc = encode_labels(train_targets, 10)
 # create a network architecture
 # simple and fast
 network = NeuralNetwork([
+    Dropout(prob=0.1),
     Linear(input_size=784, output_size=32),
     Relu(),
     Linear(input_size=32, output_size=10),
-])
+], training=True)
 # train our network
 train(
     network,
@@ -39,6 +40,8 @@ train(
     optimizer=SGD(learning_rate=0.01),
     verbose=True
     )
+# set prediction mode
+network.training = False
 # get test prediction
 test_prediction = network.predict(test_inputs_normalzed)
 # calculate test accuracy

@@ -28,8 +28,10 @@ class Linear(Layer):
     """
     computes output = inputs @ w + b
     """
-    def __init__(self, input_size, output_size):
+    def __init__(self, input_size, output_size, batch_norm=False, epsilon=1e-5):
         super().__init__()
+        self.batch_norm = batch_norm
+        self.epsilon = epsilon
         self.params["w"] = np.random.randn(input_size, output_size)
         self.params["b"] = np.random.randn(output_size)
 
@@ -37,6 +39,11 @@ class Linear(Layer):
         """
         outputs = inputs @ w + b
         """
+        if self.batch_norm:
+            # batch normalization
+            mean_w = np.mean(self.params["w"])
+            std_w = np.std(self.params["w"])
+            self.params["w"] = (self.params["w"] - mean_w) / (std_w + self.epsilon)
         self.inputs = inputs
         return inputs @ self.params["w"] + self.params["b"]
 

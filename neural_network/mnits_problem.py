@@ -26,9 +26,9 @@ train_targets_enc = encode_labels(train_targets, 10)
 # simple and fast
 network = NeuralNetwork([
     Dropout(prob=0.1),
-    Linear(input_size=784, output_size=32),
+    Linear(input_size=784, output_size=32, batch_norm=True),
     Relu(),
-    Linear(input_size=32, output_size=10),
+    Linear(input_size=32, output_size=10, batch_norm=True),
 ], training=True)
 # train our network
 train(
@@ -36,7 +36,7 @@ train(
     train_inputs_normalized,
     train_targets_enc,
     num_epochs=10,
-    iterator=BatchIterator(batch_size=4),
+    iterator=BatchIterator(batch_size=16),
     optimizer=SGD(learning_rate=0.01),
     verbose=True
     )

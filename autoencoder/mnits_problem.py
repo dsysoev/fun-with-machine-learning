@@ -4,7 +4,6 @@ https://en.wikipedia.org/wiki/MNIST_database
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from train import train
 from network import NeuralNetwork
@@ -12,16 +11,6 @@ from layers import Linear, Sigmoid, Relu, Tanh, LeakyRelu, Dropout
 from optimizer import SGD
 from data import BatchIterator, load_mnist, encode_labels
 
-
-def plot_image(index, test_img, pred_img):
-    # original on the left
-    # predicted on the right
-    union = np.concatenate([
-        test_img[index, :].reshape(28, 28),
-        pred_img[index, :].reshape(28, 28)
-        ], axis=1)
-    plt.imshow(union, cmap='gray')
-    plt.show()
 
 # set random seed
 np.random.seed(137)
@@ -57,8 +46,5 @@ train(
 network.training = False
 # get test prediction
 test_prediction = network.forward(test_inputs_normalzed)
-# plot original and predicted images
-num_samples = 10
-indexes = np.random.choice(test_inputs_normalzed.shape[0], num_samples)
-for index in indexes:
-    plot_image(index, test_inputs_normalzed, test_prediction)
+np.savetxt('original.txt', test_inputs_normalzed, fmt='%f')
+np.savetxt('prediction.txt', test_prediction, fmt='%f')

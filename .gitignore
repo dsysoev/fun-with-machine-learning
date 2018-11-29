@@ -104,4 +104,5 @@ ENV/
 *.pdf
 
 data/
+data-cifar10/
 autoencoder/*.txt

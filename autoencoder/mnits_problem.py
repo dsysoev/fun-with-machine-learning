@@ -15,8 +15,8 @@ from data import BatchIterator, load_mnist, encode_labels
 # set random seed
 np.random.seed(137)
 # load mnist data
-train_inputs, train_targets = load_mnist('./data/', kind='train')
-test_inputs, test_targets = load_mnist('./data/', kind='t10k')
+train_inputs, train_targets = load_mnist('../data/', kind='train')
+test_inputs, test_targets = load_mnist('../data/', kind='t10k')
 # normalize input values using min max scaler style
 train_inputs_normalized = train_inputs / 255.
 test_inputs_normalzed = test_inputs / 255.

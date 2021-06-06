@@ -20,6 +20,7 @@ test_inputs, test_targets = load_mnist('../data/', kind='t10k')
 # normalize input values using min max scaler style
 train_inputs_normalized = train_inputs / 255.
 test_inputs_normalzed = test_inputs / 255.
+print('train shape {}, test shape {}'.format(train_inputs.shape, test_inputs.shape))
 # one hot encoding labels
 train_targets_enc = encode_labels(train_targets, 10)
 # create a network architecture
@@ -36,8 +37,8 @@ train(
     train_inputs_normalized,
     train_targets_enc,
     num_epochs=10,
-    iterator=BatchIterator(batch_size=16),
-    optimizer=SGD(learning_rate=0.01),
+    iterator=BatchIterator(batch_size=128),
+    optimizer=SGD(learning_rate=0.001),
     verbose=True
     )
 # set prediction mode
@@ -45,5 +46,5 @@ network.training = False
 # get test prediction
 test_prediction = network.predict(test_inputs_normalzed)
 # calculate test accuracy
-test_accuracy = (test_prediction == test_targets)
-print('accuracy on test set:', np.mean(test_accuracy))
+test_accuracy = np.mean(test_prediction == test_targets)
+print('accuracy on test set:', test_accuracy)

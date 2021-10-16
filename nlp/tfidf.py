@@ -1,27 +1,21 @@
 import pickle
 
-import nltk
 import pandas as pd
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 
-nltk.download('punkt')
-nltk.download('stopwords')
 
-
-def train_test_split_data(categories=None, random_state=42):
-    # select categories for predict
-    categories = ['alt.atheism', 'soc.religion.christian'] if categories is None else categories
+def train_test_split_data(categories, random_state=42):
     # get train data
     train = fetch_20newsgroups(subset='train', categories=categories, shuffle=True, random_state=random_state)
     x_train = train.data
-    y_train = train.target
+    y_train = (train.target == 1).astype(int)
     # get test
     test = fetch_20newsgroups(subset='test', categories=categories, shuffle=True, random_state=random_state)
     x_test = test.data
-    y_test = test.target
+    y_test = (test.target == 1).astype(int)
 
     return x_train, x_test, y_train, y_test
 
@@ -71,7 +65,11 @@ def load_predict_and_score(x, y):
 
 
 def main(top_words=60):
-    categories = ['alt.atheism', 'soc.religion.christian']
+    categories = ['comp.graphics',
+                  'comp.os.ms-windows.misc',
+                  'comp.sys.ibm.pc.hardware',
+                  'comp.sys.mac.hardware',
+                  'comp.windows.x']
     # set the model
     model = LogisticRegression(C=10)
     top_words = 1000 if top_words is None else top_words

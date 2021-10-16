@@ -12,12 +12,13 @@ nltk.download('stopwords')
 
 
 def train_test_split_data(categories=None, random_state=42):
+    # select categories for predict
     categories = ['alt.atheism', 'soc.religion.christian'] if categories is None else categories
-
+    # get train data
     train = fetch_20newsgroups(subset='train', categories=categories, shuffle=True, random_state=random_state)
     x_train = train.data
     y_train = train.target
-
+    # get test
     test = fetch_20newsgroups(subset='test', categories=categories, shuffle=True, random_state=random_state)
     x_test = test.data
     y_test = test.target
@@ -26,6 +27,7 @@ def train_test_split_data(categories=None, random_state=42):
 
 
 def preprocess(x, vector):
+    # simple preprocessing
     x_train = pd.DataFrame(vector.fit_transform(x).todense(), columns=vector.get_feature_names_out())
     return x_train
 
@@ -35,17 +37,15 @@ def fit_and_save(model, x, y, top_words=None):
     vector = TfidfVectorizer(stop_words='english')
     x_train = preprocess(x, vector)
     vocab = x_train.sum().sort_values(ascending=False).index.tolist()
-
     # select top words
     vocab = vocab if top_words is None else vocab[:top_words]
+    # create vocabulary again based on top words
     vector = TfidfVectorizer(stop_words='english', vocabulary=vocab)
-
     x_train = preprocess(x, vector)
     model.fit(x_train, y)
-
+    # save model and vector
     with open("model.pkl", "wb") as f:
         pickle.dump(model, f)
-
     with open("vector.pkl", "wb") as f:
         pickle.dump(vector, f)
 
@@ -53,30 +53,34 @@ def fit_and_save(model, x, y, top_words=None):
 def load_vector_and_model():
     with open("model.pkl", "rb") as f:
         model = pickle.load(f)
-
     with open("vector.pkl", "rb") as f:
         vector = pickle.load(f)
 
     return vector, model
 
 
-def predict_and_score(x, y):
+def load_predict_and_score(x, y):
+    # load
     vector, model = load_vector_and_model()
     x_test = preprocess(x, vector)
+    # predict
     predict = model.predict_proba(x_test)[:, 1]
+    # and score
     roc = roc_auc_score(y, predict)
-
     return roc
 
 
 def main(top_words=60):
     categories = ['alt.atheism', 'soc.religion.christian']
+    # set the model
     model = LogisticRegression(C=10)
     top_words = 1000 if top_words is None else top_words
-
+    # load data
     x_train, x_test, y_train, y_test = train_test_split_data(categories=categories)
+    # save fitted model
     fit_and_save(model, x_train, y_train, top_words)
-    score = predict_and_score(x_test, y_test)
+    # calc score
+    score = load_predict_and_score(x_test, y_test)
     print("model: {}, top_words: {}, roc auc: {:.2f}".format(model.__class__.__name__, top_words, score))
     return score
 

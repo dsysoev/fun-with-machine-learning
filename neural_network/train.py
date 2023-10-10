@@ -47,6 +47,4 @@ def train(network,
             # calculate test accuracy
             train_targets = np.argmax(targets, axis=1)
             accuracy = np.mean(train_prediction == train_targets)
-
-            print("Epoch {} / {} in {:0.2f} sec".format(epoch + 1, num_epochs, epoch_time))
-            print("Training set accuracy {}".format(accuracy))
+            print(f"epoch {epoch + 1} / {num_epochs} loss : {epoch_loss:.4f} accuracy {accuracy}")

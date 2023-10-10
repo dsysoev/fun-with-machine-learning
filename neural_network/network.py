@@ -39,7 +39,8 @@ class NeuralNetwork:
         return grads
 
     def predict_proba(self, inputs):
-        value = softmax(self.forward(inputs))
+        value = self.forward(inputs)
+        value = softmax(value)
         return value
 
     def predict(self, inputs):

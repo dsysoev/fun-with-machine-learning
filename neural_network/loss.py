@@ -27,11 +27,15 @@ class MSE(Loss):
 
 
 class BinaryCrossEntropy(Loss):
+    """
+    Binary Cross Entropy loss
+    """
     def loss(self, predicted, actual):
-         loss = -(actual * np.log(predicted)).sum()
-         return loss
+        epsilon = 1e-5
+        loss = -np.sum(actual * np.log(predicted + epsilon) + (1 - actual) * np.log(1 - predicted + epsilon))
+        return loss
 
     def grad(self, predicted, actual):
-        epsilon = 0.01
+        epsilon = 1e-3
         value = (predicted - actual) / (predicted * (1 - predicted) + epsilon)
         return value

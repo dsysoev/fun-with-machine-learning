@@ -1,0 +1,11 @@
+pandas<3.0
+scikit-learn<2.0
+pynvim
+jupytext
+ipykernel
+pandas
+matplotlib
+tqdm
+tabulate
+ruff
+pyswarms
